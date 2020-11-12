@@ -35,7 +35,7 @@ server.get('/messages', (req, res) => {
 });
 
 server.post('/messages', (req, res) => {
-    const [ from, to, text, type ] = req.body;
+    const { from, to, text, type } = req.body;
     const message = {
         from: stripHtml(from).result,
         to: stripHtml(to).result,
@@ -44,12 +44,14 @@ server.post('/messages', (req, res) => {
         time: dayjs().format('HH:mm:ss')
     };
 
-    const userFrom = users.find(user => from == user.name);
+    const userFrom = users.find((user) => {
+        return from == user.name});
 
     if(from == '' || to == '' || text == '' || (type !== 'message' && type !== 'private-message') || !userFrom) {
         res.sendStatus(400);
     } else {
         messages.push(message);
+        res.sendStatus(200);
     }
 
 });
