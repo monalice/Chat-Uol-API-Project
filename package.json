@@ -1,0 +1,27 @@
+{
+  "name": "10-api-bate-papo-uol",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/monalice/10-api-bate-papo-uol.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/monalice/10-api-bate-papo-uol/issues"
+  },
+  "homepage": "https://github.com/monalice/10-api-bate-papo-uol#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dayjs": "^1.9.6",
+    "express": "^4.17.1",
+    "path": "^0.12.7",
+    "string-strip-html": "^6.3.0"
+  }
+}
