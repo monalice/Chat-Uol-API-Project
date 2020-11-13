@@ -13,13 +13,19 @@ const users = [];
 const messages = [];
 
 server.post('/participants', (req, res) => {
-    const name = stripHtml(req.body.name).result;
+    const name = stripHtml(req.body.name.trim()).result;
     if(name == '') {
         res.sendStatus(400);
     } else {
         users.push({name: name, lastStatus: Date.now()});
 
-        messages.push({from: name, to: 'Todos', text: 'entra na sala...', type: 'status', time: dayjs().format('HH:mm:ss')});
+        messages.push({
+            from: name, 
+            to: 'Todos', 
+            text: 'entra na sala...', 
+            type: 'status', 
+            time: dayjs().format('HH:mm:ss')
+        });
         res.sendStatus(200);
     }
 });
