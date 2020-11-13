@@ -1,10 +1,13 @@
 const express = require('express');
-const path = require('path');
+const cors = require('cors');
 const stripHtml = require('string-strip-html');
 const dayjs = require('dayjs');
+const { setInterval } = require('timers');
 
 const server = express();
+
 server.use(express.json());
+server.use(cors());
 
 const users = [];
 const messages = [];
@@ -17,21 +20,12 @@ server.post('/participants', (req, res) => {
         users.push({name: name, lastStatus: Date.now()});
 
         messages.push({from: name, to: 'Todos', text: 'entra na sala...', type: 'status', time: dayjs().format('HH:mm:ss')});
-        console.log(messages);
         res.sendStatus(200);
     }
 });
 
-server.get('/messages', (req, res) => {
-    if(messages.length > 100) {
-        const msg = [];
-        for(let i = messages.length - 1; i > messages.length - 100; i--) {
-            msg.push(messages[i]);
-        }
-        res.send(msg);
-    } else {
-        res.send(messages);
-    }
+server.get('/participants', (req, res) => {
+    res.send(users);
 });
 
 server.post('/messages', (req, res) => {
@@ -39,7 +33,7 @@ server.post('/messages', (req, res) => {
     const message = {
         from: stripHtml(from).result,
         to: stripHtml(to).result,
-        text: stripHtml(text).result,
+        text: stripHtml(text.trim()).result,
         type: stripHtml(type).result,
         time: dayjs().format('HH:mm:ss')
     };
@@ -55,5 +49,42 @@ server.post('/messages', (req, res) => {
     }
 
 });
+
+server.get('/messages', (req, res) => {
+    const limit = req.query.limit || 100;
+    const filteredMessages = messages.slice(messages.length - limit);
+    res.send(filteredMessages);
+});
+
+server.post('/status', (req, res) => {
+    const { name } = req.body;
+    const user = users.find((user) => {
+        return name == user.name
+    });
+
+    if(!user) {
+        res.sendStatus(400);
+    } else {
+        user.lastStatus = Date.now();
+        res.sendStatus(200);
+    }
+});
+
+setInterval(() => {
+    users.forEach((user) => {
+        if(Date.now() - user.lastStatus > 10000){
+            users.splice(user);
+            const exitMessage = {
+                from: user.name,
+                to: 'Todos',
+                text: 'sai da sala...',
+                type: 'status',
+                time: dayjs().format('HH:mm:ss')
+            };
+            messages.push(exitMessage);
+        }
+    });
+
+}, 15000);
 
 server.listen(3000);
